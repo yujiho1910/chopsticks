@@ -1,96 +1,347 @@
-/* style.css */
-body, html {
-  margin: 0;
-  padding: 0;
-  font-family: 'Baloo 2', cursive;
-  background-color: #f4f1de;
-  height: 100%;
+#clap-btn {
+    display: block;
+    width: 70%;
+    margin: 18px auto 0 auto;
+    padding: 10px 0;
+    font-size: 1rem;
+    font-family: 'Baloo 2', cursive;
+    background: #fff;
+    color: #219150;
+    border: 2px solid #219150;
+    border-radius: 14px;
+    box-shadow: none;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s, border 0.18s;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    outline: none;
+}
+
+#clap-btn:active:not(:disabled),
+#clap-btn:hover:not(:disabled),
+#clap-btn:focus:not(:disabled) {
+    background: #eafaf1;
+    color: #219150;
+    border: 2px solid #219150;
+    z-index: 2;
+}
+
+#clap-btn:disabled {
+    background: #eafaf1;
+    color: #bbb;
+    border: 2px solid #b2f7b2;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: 0.7;
+}
+
+/* Reset Button Styling */
+/* Top-right circular reset icon button */
+.reset-icon-btn {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 2px solid #219150;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.18s, border 0.18s;
+    box-shadow: none;
+    outline: none;
+    z-index: 10;
+}
+
+#game-ui {
+    position: relative;
+}
+
+.reset-icon-btn svg {
+    width: 20px;
+    height: 20px;
+    stroke: #219150;
+    fill: none;
+    pointer-events: none;
+}
+
+.reset-icon-btn:hover,
+.reset-icon-btn:focus {
+    background: #eafaf1;
+    border-color: #43ea7a;
+}
+
+/* Modal error message styling */
+.modal-error {
+    font-size: 1rem;
+    color: #d32f2f;
+    margin-top: 10px;
+}
+
+/* Unified Green Theme - Clean & Cool */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Baloo 2', cursive;
+    background-color: #f4f1de;
+    height: 100%;
 }
 
 .background {
-  background: linear-gradient(to bottom, #c2f0c2 0%, #f9d9a9 100%);
-  background-repeat: no-repeat;
-  background-size: cover;
-  min-height: 100vh;
-  padding: 20px;
-  box-sizing: border-box;
+    background: linear-gradient(to bottom, #b2f7b2 0%, #d2fdd9 100%);
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: rgba(255, 255, 255, 0.85);
-  border-radius: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: rgba(234, 250, 241, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 4px 16px #21915044;
+    text-align: center;
 }
 
 h1 {
-  margin-bottom: 10px;
-  font-size: 2.5rem;
-  color: #5c3c0d;
+    margin-bottom: 10px;
+    font-size: 2.5rem;
+    color: #2e7d32;
 }
 
 #turn-indicator {
-  font-weight: bold;
-  font-size: 1.2rem;
-  margin-bottom: 20px;
-  color: #1e6f1e;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: #1b5e20;
 }
 
 .player-board {
-  margin: 20px 0;
+    margin: 20px 0;
 }
 
 .player-board h2 {
-  margin-bottom: 10px;
-  color: #3c2a1e;
+    margin-bottom: 10px;
+    color: #2e7d32;
+}
+
+/* New horizontal game board layout */
+.game-board {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+    margin: 30px 0;
+}
+
+.container-p1 {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+}
+
+.container-p2 {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 20px;
+}
+
+.player-section {
+    display: flex;
+    align-items: center;
+    min-width: 100px;
+}
+
+.player-section h2 {
+    margin: 0;
+    color: #2e7d32;
+    font-size: 1.5rem;
+}
+
+.hands-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.center-divider {
+    width: 2px;
+    height: 250px;
+    background-color: #219150;
+    opacity: 0.4;
 }
 
 .hand {
-  font-size: 2rem;
-  padding: 15px 25px;
-  margin: 10px;
-  border: 3px solid #654321;
-  background-color: #fff8dc;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+    font-size: 2rem;
+    padding: 15px 25px;
+    margin: 0;
+    border: 3px solid #219150;
+    background-color: #eafaf1;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
 }
 
 .hand.selected {
-  background-color: #ffe066;
-  box-shadow: 0 0 10px #ffd700;
-  border-color: #ffd700;
+    background-color: #b9fbc0;
+    box-shadow: 0 0 10px #81c784;
+    border-color: #81c784;
 }
 
 .hand:hover:not(:disabled) {
-  transform: scale(1.1);
-  background-color: #ffeaa7;
+    transform: scale(1.1);
+    background-color: #c8facc;
 }
 
 .hand:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 
 .count {
-  display: block;
-  font-size: 1rem;
-  margin-top: 4px;
-  color: #333;
+    display: block;
+    font-size: 1rem;
+    margin-top: 4px;
+    color: #219150;
 }
 
 #message {
-  font-size: 1.2rem;
-  color: #b32e2e;
-  margin-top: 20px;
+    font-size: 1.2rem;
+    color: #2e7d32;
+    margin-top: 20px;
+}
+
+#menu button {
+    display: block;
+    width: 80%;
+    margin: 12px auto;
+    padding: 10px 0;
+    font-size: 1rem;
+    font-family: 'Baloo 2', cursive;
+    background: #fff;
+    color: #219150;
+    border: 2px solid #219150;
+    border-radius: 14px;
+    box-shadow: none;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s, border 0.18s;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    outline: none;
+    position: relative;
+}
+
+#menu button:active:not(:disabled),
+#menu button:hover:not(:disabled),
+#menu button:focus:not(:disabled) {
+    background: #eafaf1;
+    color: #219150;
+    border: 2px solid #219150;
+    z-index: 2;
+}
+
+#menu button:disabled {
+    background: #eafaf1;
+    color: #bbb;
+    border: 2px solid #b2f7b2;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: 0.7;
 }
 
 @media (max-width: 600px) {
-  .hand {
-    font-size: 1.5rem;
-    padding: 10px 15px;
-  }
+    .hand {
+        font-size: 1.5rem;
+        padding: 10px 15px;
+    }
+}
+
+/* Utility class for hiding elements */
+.hidden {
+    display: none !important;
+}
+
+/* Direct hiding rules for key UI elements */
+#message.hidden,
+#menu.hidden,
+.hand.hidden,
+.count.hidden,
+#turn-indicator.hidden,
+.player-board.hidden {
+    display: none !important;
+}
+
+/* Modal popout for clap event */
+/* Place .modal-popout inside #game-ui or .game-ui for coverage of only the game area */
+#game-ui,
+.game-ui {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    /* adjust as needed for your game area */
+}
+
+.modal-popout {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal-popout.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-content {
+    background: #eafaf1;
+    border-radius: 22px;
+    box-shadow: 0 12px 40px #21915088, 0 2px 8px #21915022;
+    border: 3px solid #43ea7a;
+    padding: 48px 36px;
+    text-align: center;
+    color: #2e7d32;
+    font-size: 2.2rem;
+    font-family: 'Baloo 2', cursive;
+    font-weight: bold;
+    animation: popout-bounce 0.4s cubic-bezier(.68, -0.55, .27, 1.55);
+}
+
+@keyframes popout-bounce {
+    0% {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+
+    60% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.hands-divider {
+    display: none;
 }

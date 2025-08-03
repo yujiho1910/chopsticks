@@ -1,6 +1,7 @@
 <!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,28 +9,76 @@
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2&display=swap" rel="stylesheet">
 </head>
+
 <body>
   <div class="background">
-    <div class="container">
+    <main class="container">
       <h1>Chopsticks</h1>
-      <div id="turn-indicator">Your Turn</div>
-
-      <div class="player-board" id="opponent-board">
-        <h2>Opponent</h2>
-        <button class="hand" data-player="opponent" data-hand="left">✋<span class="count">1</span></button>
-        <button class="hand" data-player="opponent" data-hand="right">🤚<span class="count">1</span></button>
-      </div>
-
-      <div class="player-board" id="your-board">
-        <h2>You</h2>
-        <button class="hand" data-player="you" data-hand="left">✋<span class="count">1</span></button>
-        <button class="hand" data-player="you" data-hand="right">🤚<span class="count">1</span></button>
-      </div>
-
-      <div id="message"></div>
-    </div>
+      <section id="menu">
+        <h2>Select Game Mode</h2>
+        <button id="mode-2p">2 Player Mode</button>
+        <!-- <button id="mode-ai-easy" disabled>Play Against AI (Easy) (in progress)</button> -->
+        <!-- <button id="mode-ai-hard" disabled>Play Against AI (Hard) (in progress)</button> -->
+      </section>
+      <section id="game-ui" class="hidden">
+        <button class="reset-icon-btn" id="reset-btn" title="Reset Game" aria-label="Reset Game">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+            <path d="M21 3v5h-5" />
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+            <path d="M3 21v-5h5" />
+          </svg>
+        </button>
+        <div id="turn-indicator">Player 1's Turn</div>
+        <div class="game-board">
+          <div class="container-p1">
+            <div class="player-section">
+              <h2>Player 1</h2>
+            </div>
+            <div class="hands-section">
+              <button class="hand" data-player="player1" data-hand="left" aria-label="Player 1 Left Hand">✋<span
+                  class="count">1</span></button>
+              <button class="hand" data-player="player1" data-hand="right" aria-label="Player 1 Right Hand">🤚<span
+                  class="count">1</span></button>
+            </div>
+          </div>
+          <div class="center-divider"></div>
+          <div class="container-p2">
+            <div class="player-section">
+              <h2>Player 2</h2>
+            </div>
+            <div class="hands-section">
+              <button class="hand" data-player="player2" data-hand="left" aria-label="Player 2 Left Hand">✋<span
+                  class="count">1</span></button>
+              <button class="hand" data-player="player2" data-hand="right" aria-label="Player 2 Right Hand">🤚<span
+                  class="count">1</span></button>
+            </div>
+          </div>
+        </div>
+        <div id="message"></div>
+        <button id="clap-btn" class="hidden">Clap (Split Hand)</button>
+        <!-- Modal popout for clap event, covers only game-ui -->
+        <div class="modal-popout" id="clap-modal">
+          <div class="modal-content">
+            <h3>Split Your Hand</h3>
+            <div class="modal-desc">Distribute <span id="clap-hand-val"></span> between two hands:</div>
+            <div class="modal-inputs">
+              <input id="clap-left" type="number" min="1" />
+              <span class="plus">+</span>
+              <input id="clap-right" type="number" min="1" />
+            </div>
+            <div id="clap-error" class="modal-error"></div>
+            <div class="modal-actions">
+              <button id="clap-confirm" class="modal-btn confirm">Confirm</button>
+              <button id="clap-cancel" class="modal-btn cancel">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
   </div>
 
   <script src="script.js"></script>
 </body>
+
 </html>
