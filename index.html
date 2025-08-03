@@ -1,0 +1,35 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chopsticks Game</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="background">
+    <div class="container">
+      <h1>Chopsticks</h1>
+      <div id="turn-indicator">Your Turn</div>
+
+      <div class="player-board" id="opponent-board">
+        <h2>Opponent</h2>
+        <button class="hand" data-player="opponent" data-hand="left">✋<span class="count">1</span></button>
+        <button class="hand" data-player="opponent" data-hand="right">🤚<span class="count">1</span></button>
+      </div>
+
+      <div class="player-board" id="your-board">
+        <h2>You</h2>
+        <button class="hand" data-player="you" data-hand="left">✋<span class="count">1</span></button>
+        <button class="hand" data-player="you" data-hand="right">🤚<span class="count">1</span></button>
+      </div>
+
+      <div id="message"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

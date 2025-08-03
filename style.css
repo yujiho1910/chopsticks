@@ -1,0 +1,96 @@
+/* style.css */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Baloo 2', cursive;
+  background-color: #f4f1de;
+  height: 100%;
+}
+
+.background {
+  background: linear-gradient(to bottom, #c2f0c2 0%, #f9d9a9 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 10px;
+  font-size: 2.5rem;
+  color: #5c3c0d;
+}
+
+#turn-indicator {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  color: #1e6f1e;
+}
+
+.player-board {
+  margin: 20px 0;
+}
+
+.player-board h2 {
+  margin-bottom: 10px;
+  color: #3c2a1e;
+}
+
+.hand {
+  font-size: 2rem;
+  padding: 15px 25px;
+  margin: 10px;
+  border: 3px solid #654321;
+  background-color: #fff8dc;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+
+.hand.selected {
+  background-color: #ffe066;
+  box-shadow: 0 0 10px #ffd700;
+  border-color: #ffd700;
+}
+
+.hand:hover:not(:disabled) {
+  transform: scale(1.1);
+  background-color: #ffeaa7;
+}
+
+.hand:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.count {
+  display: block;
+  font-size: 1rem;
+  margin-top: 4px;
+  color: #333;
+}
+
+#message {
+  font-size: 1.2rem;
+  color: #b32e2e;
+  margin-top: 20px;
+}
+
+@media (max-width: 600px) {
+  .hand {
+    font-size: 1.5rem;
+    padding: 10px 15px;
+  }
+}
