@@ -34,12 +34,17 @@ let player2Name = 'Player 2';
 // DOM ELEMENT REFERENCES
 // ========================================
 
-const hands = document.querySelectorAll('.hand');
-const turnIndicator = document.getElementById('turn-indicator');
-const messageBox = document.getElementById('message');
-const menu = document.getElementById('menu');
-const nameSetup = document.getElementById('name-setup');
-const gameUI = document.getElementById('game-ui');
+// Wait for DOM to be fully loaded before initializing
+let hands, turnIndicator, messageBox, menu, nameSetup, gameUI;
+
+function initializeDOMReferences() {
+  hands = document.querySelectorAll('.hand');
+  turnIndicator = document.getElementById('turn-indicator');
+  messageBox = document.getElementById('message');
+  menu = document.getElementById('menu');
+  nameSetup = document.getElementById('name-setup');
+  gameUI = document.getElementById('game-ui');
+}
 
 // ========================================
 // CORE GAME FUNCTIONS
@@ -57,13 +62,15 @@ function resetGame() {
   currentPlayer = 'player1';
   selectedHand = null;
   selectedButton = null;
-  messageBox.textContent = '';
-  turnIndicator.textContent = `${player1Name}'s Turn`;
+  if (messageBox) messageBox.textContent = '';
+  if (turnIndicator) turnIndicator.textContent = `${player1Name}'s Turn`;
   
-  hands.forEach(hand => {
-    hand.disabled = false;
-    hand.addEventListener('click', handleHandClick);
-  });
+  if (hands && hands.length > 0) {
+    hands.forEach(hand => {
+      hand.disabled = false;
+      hand.addEventListener('click', handleHandClick);
+    });
+  }
   
   updateUI();
 }
@@ -73,6 +80,8 @@ function resetGame() {
  * Handles finger counts, disabled states, and selection highlighting
  */
 function updateHandUI() {
+  if (!hands || hands.length === 0) return; // Safety check
+  
   hands.forEach(hand => {
     const player = hand.dataset.player;
     const handName = hand.dataset.hand;
@@ -116,11 +125,13 @@ function checkWin() {
   const winner = currentPlayer === 'player1' ? player1Name : player2Name;
   
   if (state[opponent].left === 0 && state[opponent].right === 0) {
-    messageBox.textContent = `${winner} wins!`;
-    hands.forEach(hand => {
-      hand.disabled = true;
-      hand.removeEventListener('click', handleHandClick);
-    });
+    if (messageBox) messageBox.textContent = `${winner} wins!`;
+    if (hands && hands.length > 0) {
+      hands.forEach(hand => {
+        hand.disabled = true;
+        hand.removeEventListener('click', handleHandClick);
+      });
+    }
     
     const clapBtn = document.getElementById('clap-btn');
     if (clapBtn) clapBtn.classList.add('hidden');
@@ -136,7 +147,7 @@ function checkWin() {
 function switchTurn() {
   currentPlayer = currentPlayer === 'player1' ? 'player2' : 'player1';
   const currentName = currentPlayer === 'player1' ? player1Name : player2Name;
-  turnIndicator.textContent = `${currentName}'s Turn`;
+  if (turnIndicator) turnIndicator.textContent = `${currentName}'s Turn`;
 }
 
 // ========================================
@@ -165,13 +176,15 @@ function handleHandClick(e) {
       selectedButton = hand;
       
       // Enable valid attack targets: opponent hands and your other hand (if both have fingers)
-      hands.forEach(h => {
-        const hPlayer = h.dataset.player;
-        const hHand = h.dataset.hand;
-        const isSelectedHand = (hPlayer === currentPlayer && hHand === selectedHand);
-        const hasFingers = state[hPlayer][hHand] > 0;
-        h.disabled = isSelectedHand || !hasFingers;
-      });
+      if (hands && hands.length > 0) {
+        hands.forEach(h => {
+          const hPlayer = h.dataset.player;
+          const hHand = h.dataset.hand;
+          const isSelectedHand = (hPlayer === currentPlayer && hHand === selectedHand);
+          const hasFingers = state[hPlayer][hHand] > 0;
+          h.disabled = isSelectedHand || !hasFingers;
+        });
+      }
       
       updateUI();
     } else if (selectedHand === handName) {
@@ -179,9 +192,11 @@ function handleHandClick(e) {
       selectedHand = null;
       selectedButton = null;
       
-      hands.forEach(h => {
-        h.disabled = state[h.dataset.player][h.dataset.hand] === 0;
-      });
+      if (hands && hands.length > 0) {
+        hands.forEach(h => {
+          h.disabled = state[h.dataset.player][h.dataset.hand] === 0;
+        });
+      }
       
       updateUI();
     } else {
@@ -243,8 +258,8 @@ function clearSelection() {
 function selectGameMode(mode) {
   gameMode = mode;
   
-  menu.classList.add('hidden');
-  nameSetup.classList.remove('hidden');
+  if (menu) menu.classList.add('hidden');
+  if (nameSetup) nameSetup.classList.remove('hidden');
   
   // Configure name inputs based on selected mode
   const player1InputGroup = document.getElementById('player1-input-group');
@@ -254,21 +269,21 @@ function selectGameMode(mode) {
   const player1Input = document.getElementById('player1-name');
   
   if (mode === '2p') {
-    nameSetupTitle.textContent = 'Enter Player Names';
-    player1InputGroup.style.display = 'flex';
-    player2InputGroup.style.display = 'flex';
-    player1Label.textContent = 'Player 1:';
-    player1Input.placeholder = 'Player 1';
+    if (nameSetupTitle) nameSetupTitle.textContent = 'Enter Player Names';
+    if (player1InputGroup) player1InputGroup.style.display = 'flex';
+    if (player2InputGroup) player2InputGroup.style.display = 'flex';
+    if (player1Label) player1Label.textContent = 'Player 1:';
+    if (player1Input) player1Input.placeholder = 'Player 1';
   } else {
     // AI modes (future implementation)
-    nameSetupTitle.textContent = 'Enter Your Name';
-    player1InputGroup.style.display = 'flex';
-    player2InputGroup.style.display = 'none';
-    player1Label.textContent = 'Your Name:';
-    player1Input.placeholder = 'Player';
+    if (nameSetupTitle) nameSetupTitle.textContent = 'Enter Your Name';
+    if (player1InputGroup) player1InputGroup.style.display = 'flex';
+    if (player2InputGroup) player2InputGroup.style.display = 'none';
+    if (player1Label) player1Label.textContent = 'Your Name:';
+    if (player1Input) player1Input.placeholder = 'Player';
   }
   
-  player1Input.focus();
+  if (player1Input) player1Input.focus();
 }
 
 /**
@@ -286,10 +301,10 @@ function startGame() {
     player2Name = 'AI';
   }
   
-  turnIndicator.textContent = `${player1Name}'s Turn`;
+  if (turnIndicator) turnIndicator.textContent = `${player1Name}'s Turn`;
   
-  nameSetup.classList.add('hidden');
-  gameUI.classList.remove('hidden');
+  if (nameSetup) nameSetup.classList.add('hidden');
+  if (gameUI) gameUI.classList.remove('hidden');
   updateUI();
 }
 
@@ -297,9 +312,9 @@ function startGame() {
  * Returns to main menu and resets game state
  */
 function backToMenu() {
-  menu.classList.remove('hidden');
-  nameSetup.classList.add('hidden');
-  gameUI.classList.add('hidden');
+  if (menu) menu.classList.remove('hidden');
+  if (nameSetup) nameSetup.classList.add('hidden');
+  if (gameUI) gameUI.classList.add('hidden');
   resetGame();
 }
 
@@ -307,39 +322,70 @@ function backToMenu() {
 // EVENT LISTENERS AND INITIALIZATION
 // ========================================
 
-// Game mode selection
-document.getElementById('mode-2p').onclick = () => selectGameMode('2p');
+// Initialize the game when DOM is loaded
+function initializeGame() {
+  initializeDOMReferences();
+  
+  // Game mode selection
+  const mode2pBtn = document.getElementById('mode-2p');
+  if (mode2pBtn) mode2pBtn.onclick = () => selectGameMode('2p');
 
-// Name setup navigation
-document.getElementById('start-game-btn').onclick = startGame;
-document.getElementById('back-to-menu-btn').onclick = () => {
-  nameSetup.classList.add('hidden');
-  menu.classList.remove('hidden');
-};
-
-// Game controls
-document.getElementById('reset-btn').onclick = resetGame;
-document.getElementById('menu-btn').onclick = backToMenu;
-
-// Keyboard navigation for name inputs
-document.getElementById('player1-name').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') {
-    if (gameMode === '2p') {
-      document.getElementById('player2-name').focus();
-    } else {
-      startGame();
-    }
+  // Name setup navigation
+  const startGameBtn = document.getElementById('start-game-btn');
+  const backToMenuBtn = document.getElementById('back-to-menu-btn');
+  if (startGameBtn) startGameBtn.onclick = startGame;
+  if (backToMenuBtn) {
+    backToMenuBtn.onclick = () => {
+      if (nameSetup) nameSetup.classList.add('hidden');
+      if (menu) menu.classList.remove('hidden');
+    };
   }
-});
 
-document.getElementById('player2-name').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') {
-    startGame();
+  // Game controls
+  const resetBtn = document.getElementById('reset-btn');
+  const menuBtn = document.getElementById('menu-btn');
+  if (resetBtn) resetBtn.onclick = resetGame;
+  if (menuBtn) menuBtn.onclick = backToMenu;
+
+  // Keyboard navigation for name inputs
+  const player1NameInput = document.getElementById('player1-name');
+  const player2NameInput = document.getElementById('player2-name');
+  
+  if (player1NameInput) {
+    player1NameInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        if (gameMode === '2p' && player2NameInput) {
+          player2NameInput.focus();
+        } else {
+          startGame();
+        }
+      }
+    });
   }
-});
 
-// Hand click listeners
-hands.forEach(hand => hand.addEventListener('click', handleHandClick));
+  if (player2NameInput) {
+    player2NameInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        startGame();
+      }
+    });
+  }
+
+  // Hand click listeners
+  if (hands && hands.length > 0) {
+    hands.forEach(hand => hand.addEventListener('click', handleHandClick));
+  }
+  
+  // Initialize UI
+  updateUI();
+}
+
+// Wait for DOM to be ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeGame);
+} else {
+  initializeGame();
+}
 
 // ========================================
 // CLAP/SPLIT FUNCTIONALITY
@@ -355,7 +401,7 @@ updateUI = (function (originalUpdateUI) {
     const gameOver = (state.player1.left === 0 && state.player1.right === 0) || 
                      (state.player2.left === 0 && state.player2.right === 0);
     
-    if (!gameUI.classList.contains('hidden')) {
+    if (gameUI && !gameUI.classList.contains('hidden')) {
       originalUpdateUI();
       
       if (gameOver) {
@@ -369,18 +415,20 @@ updateUI = (function (originalUpdateUI) {
         const activeHandValue = leftAlive ? player.left : player.right;
         
         if (onlyOneHandAlive && activeHandValue > 1) {
-          clapBtn.classList.remove('hidden');
+          if (clapBtn) clapBtn.classList.remove('hidden');
         } else {
-          clapBtn.classList.add('hidden');
+          if (clapBtn) clapBtn.classList.add('hidden');
         }
       }
     } else {
       // Hide UI elements when in menu
-      hands.forEach(hand => {
-        hand.querySelector('.count').textContent = state[hand.dataset.player][hand.dataset.hand];
-        hand.disabled = true;
-        hand.classList.remove('selected');
-      });
+      if (hands && hands.length > 0) {
+        hands.forEach(hand => {
+          hand.querySelector('.count').textContent = state[hand.dataset.player][hand.dataset.hand];
+          hand.disabled = true;
+          hand.classList.remove('selected');
+        });
+      }
       if (clapBtn) clapBtn.classList.add('hidden');
     }
   };
@@ -484,6 +532,3 @@ clapCancel.onclick = function () {
   clapModal.classList.remove('active');
   clapModal.classList.add('hidden');
 };
-
-// Initialize the game
-updateUI();
