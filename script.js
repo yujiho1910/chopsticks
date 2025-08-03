@@ -1,17 +1,54 @@
-// --- Game State ---
+/**
+ * Chopsticks Game - Main Game Logic
+ * A classic hand game where players attack each other's hands with finger counts
+ * Features: 2-player mode, custom names, clap/split mechanic, mobile-responsive UI
+ */
+
+// ========================================
+// GAME STATE MANAGEMENT
+// ========================================
+
+/** Current player's turn ('player1' or 'player2') */
 let currentPlayer = 'player1';
+
+/** Currently selected hand for attacking (null when no hand selected) */
 let selectedHand = null;
+
+/** DOM reference to the selected hand button */
 let selectedButton = null;
+
+/** Current game mode ('2p' for 2-player, future: 'ai-easy', 'ai-hard') */
 let gameMode = null;
 
+/** Core game state - finger counts for each player's hands */
 const state = {
   player1: { left: 1, right: 1 },
   player2: { left: 1, right: 1 }
 };
 
+/** Player display names */
 let player1Name = 'Player 1';
 let player2Name = 'Player 2';
-// --- Reset Game ---
+
+// ========================================
+// DOM ELEMENT REFERENCES
+// ========================================
+
+const hands = document.querySelectorAll('.hand');
+const turnIndicator = document.getElementById('turn-indicator');
+const messageBox = document.getElementById('message');
+const menu = document.getElementById('menu');
+const nameSetup = document.getElementById('name-setup');
+const gameUI = document.getElementById('game-ui');
+
+// ========================================
+// CORE GAME FUNCTIONS
+// ========================================
+
+/**
+ * Resets the game to initial state
+ * Restores all hands to 1 finger, clears selections, enables all hands
+ */
 function resetGame() {
   state.player1.left = 1;
   state.player1.right = 1;
@@ -22,92 +59,112 @@ function resetGame() {
   selectedButton = null;
   messageBox.textContent = '';
   turnIndicator.textContent = `${player1Name}'s Turn`;
+  
   hands.forEach(hand => {
     hand.disabled = false;
     hand.addEventListener('click', handleHandClick);
   });
+  
   updateUI();
 }
 
-// --- DOM Elements ---
-const hands = document.querySelectorAll('.hand');
-const turnIndicator = document.getElementById('turn-indicator');
-const messageBox = document.getElementById('message');
-const menu = document.getElementById('menu');
-const gameUI = document.getElementById('game-ui');
-
-// --- UI Update ---
+/**
+ * Updates hand UI elements to reflect current game state
+ * Handles finger counts, disabled states, and selection highlighting
+ */
 function updateHandUI() {
   hands.forEach(hand => {
     const player = hand.dataset.player;
     const handName = hand.dataset.hand;
     const count = state[player][handName];
+    
     hand.querySelector('.count').textContent = count;
     hand.disabled = count === 0 || (player !== currentPlayer && !selectedHand);
     hand.classList.remove('selected');
   });
-  if (selectedButton) selectedButton.classList.add('selected');
+  
+  if (selectedButton) {
+    selectedButton.classList.add('selected');
+  }
 }
 
+/**
+ * Updates player name displays in the UI
+ */
 function updatePlayerNames() {
   const p1Board = document.getElementById('player1-board');
   const p2Board = document.getElementById('player2-board');
+  
   if (p1Board) p1Board.querySelector('h2').textContent = player1Name;
   if (p2Board) p2Board.querySelector('h2').textContent = player2Name;
 }
 
+/**
+ * Main UI update function - coordinates all UI updates
+ */
 function updateUI() {
   updateHandUI();
   updatePlayerNames();
 }
 
-// --- Win Check ---
+/**
+ * Checks if the current player has won the game
+ * @returns {boolean} True if game is won, false otherwise
+ */
 function checkWin() {
   const opponent = currentPlayer === 'player1' ? 'player2' : 'player1';
   const winner = currentPlayer === 'player1' ? player1Name : player2Name;
+  
   if (state[opponent].left === 0 && state[opponent].right === 0) {
     messageBox.textContent = `${winner} wins!`;
-    hands.forEach(h => {
-      h.disabled = true;
-      h.removeEventListener('click', handleHandClick);
+    hands.forEach(hand => {
+      hand.disabled = true;
+      hand.removeEventListener('click', handleHandClick);
     });
+    
     const clapBtn = document.getElementById('clap-btn');
     if (clapBtn) clapBtn.classList.add('hidden');
     return true;
   }
+  
   return false;
 }
 
-// --- Turn Switch ---
+/**
+ * Switches to the next player's turn
+ */
 function switchTurn() {
   currentPlayer = currentPlayer === 'player1' ? 'player2' : 'player1';
-  turnIndicator.textContent = `${currentPlayer === 'player1' ? player1Name : player2Name}'s Turn`;
+  const currentName = currentPlayer === 'player1' ? player1Name : player2Name;
+  turnIndicator.textContent = `${currentName}'s Turn`;
 }
 
-// --- Hand Click Handler ---
+// ========================================
+// HAND INTERACTION LOGIC
+// ========================================
+
 /**
- * Handles all hand click interactions in the chopsticks game
- * This function manages three main scenarios:
+ * Main hand click handler - manages all hand selection and attack logic
+ * Handles three scenarios:
  * 1. Selecting/deselecting your own hands
- * 2. Attacking opponent hands
- * 3. Managing hand states and turn transitions
+ * 2. Attacking opponent hands  
+ * 3. Self-attacking your own other hand
+ * 
+ * @param {Event} e - Click event from hand button
  */
 function handleHandClick(e) {
-  // Get information about the clicked hand
   const hand = e.currentTarget;
-  const player = hand.dataset.player;  // Which player owns this hand ('player1' or 'player2')
-  const handName = hand.dataset.hand;  // Which hand it is ('left' or 'right')
+  const player = hand.dataset.player;
+  const handName = hand.dataset.hand;
 
   // SCENARIO 1: Player clicked their own hand
   if (player === currentPlayer) {
-    
-    // Case 1A: No hand currently selected - select this hand for attacking
     if (!selectedHand) {
+      // Case 1A: Select this hand for attacking
       selectedHand = handName;
       selectedButton = hand;
       
-      // Disable only the selected hand itself and hands with 0 fingers
-      // Allow attacking: opponent hands with fingers > 0 AND your own other hand with fingers > 0
+      // Enable valid attack targets: opponent hands and your other hand (if both have fingers)
       hands.forEach(h => {
         const hPlayer = h.dataset.player;
         const hHand = h.dataset.hand;
@@ -115,116 +172,210 @@ function handleHandClick(e) {
         const hasFingers = state[hPlayer][hHand] > 0;
         h.disabled = isSelectedHand || !hasFingers;
       });
-      updateUI();
       
-    // Case 1B: Clicked the same hand that's already selected - deselect it
+      updateUI();
     } else if (selectedHand === handName) {
+      // Case 1B: Deselect currently selected hand
       selectedHand = null;
       selectedButton = null;
       
-      // Reset hand states: only disable hands with 0 fingers
       hands.forEach(h => {
         h.disabled = state[h.dataset.player][h.dataset.hand] === 0;
       });
+      
       updateUI();
-      
-    // Case 1C: Clicked your other hand while one is selected - self-attack
     } else {
-      // Execute self-attack
-      const target = handName;
-      const attackerVal = state[currentPlayer][selectedHand];  // Fingers on attacking hand
-      const newVal = state[currentPlayer][target] + attackerVal;     // Calculate new finger count
-      
-      // Apply chopsticks rule: if new value >= 5, hand becomes 0 (dead)
-      state[currentPlayer][target] = newVal >= 5 ? 0 : newVal;
-      
-      // Clear selection after attack
-      selectedHand = null;
-      selectedButton = null;
-
-      // Switch to other player's turn (self-attack still ends your turn)
+      // Case 1C: Self-attack (attack your other hand)
+      executeAttack(currentPlayer, selectedHand, currentPlayer, handName);
+      clearSelection();
       switchTurn();
       updateUI();
     }
-    
-    // Exit early since we're dealing with current player's hands
     return;
   }
   
-  // SCENARIO 2: Player clicked opponent's hand AND has a hand selected
+  // SCENARIO 2: Player clicked opponent's hand with a hand selected
   if (selectedHand) {
-    // Safety check: prevent attacking the same hand you selected (but allow attacking your other hand)
-    if (player === currentPlayer && handName === selectedHand) return;
+    executeAttack(currentPlayer, selectedHand, player, handName);
+    clearSelection();
     
-    // Execute the attack (can be on opponent's hand OR your own other hand)
-    const target = handName;
-    const attackerVal = state[currentPlayer][selectedHand];  // Fingers on attacking hand
-    const newVal = state[player][target] + attackerVal;     // Calculate new finger count
-    
-    // Apply chopsticks rule: if new value >= 5, hand becomes 0 (dead)
-    state[player][target] = newVal >= 5 ? 0 : newVal;
-    
-    // Clear selection after attack
-    selectedHand = null;
-    selectedButton = null;
-
-    // Check if this attack won the game
-    if (checkWin()) {
-      // Game over: ensure opponent's hands are properly set to 0
-      const opponent = currentPlayer === 'player1' ? 'player2' : 'player1';
-      state[opponent].left = 0;
-      state[opponent].right = 0;
-      updateUI();
-    } else {
-      // Game continues: switch to other player's turn
+    if (!checkWin()) {
       switchTurn();
-      updateUI();
     }
+    
+    updateUI();
   }
   
-  // SCENARIO 3: Player clicked opponent's hand but has no hand selected
-  // This does nothing - player must select their own hand first
+  // SCENARIO 3: Clicked opponent's hand without selection - no action
 }
 
-// --- Game Start ---
-function startGame(mode) {
+/**
+ * Executes an attack from one hand to another
+ * @param {string} attackerPlayer - Player making the attack
+ * @param {string} attackerHand - Hand making the attack ('left' or 'right')
+ * @param {string} targetPlayer - Player receiving the attack
+ * @param {string} targetHand - Hand receiving the attack ('left' or 'right')
+ */
+function executeAttack(attackerPlayer, attackerHand, targetPlayer, targetHand) {
+  const attackerVal = state[attackerPlayer][attackerHand];
+  const newVal = state[targetPlayer][targetHand] + attackerVal;
+  
+  // Chopsticks rule: hand dies if finger count reaches 5 or more
+  state[targetPlayer][targetHand] = newVal >= 5 ? 0 : newVal;
+}
+
+/**
+ * Clears hand selection state
+ */
+function clearSelection() {
+  selectedHand = null;
+  selectedButton = null;
+}
+
+// ========================================
+// MENU AND GAME MODE LOGIC
+// ========================================
+
+/**
+ * Handles game mode selection and configures name input screen
+ * @param {string} mode - Game mode ('2p', 'ai-easy', 'ai-hard')
+ */
+function selectGameMode(mode) {
   gameMode = mode;
-  player1Name = 'Player 1';
-  player2Name = 'Player 2';
+  
   menu.classList.add('hidden');
+  nameSetup.classList.remove('hidden');
+  
+  // Configure name inputs based on selected mode
+  const player1InputGroup = document.getElementById('player1-input-group');
+  const player2InputGroup = document.getElementById('player2-input-group');
+  const nameSetupTitle = document.getElementById('name-setup-title');
+  const player1Label = document.querySelector('label[for="player1-name"]');
+  const player1Input = document.getElementById('player1-name');
+  
+  if (mode === '2p') {
+    nameSetupTitle.textContent = 'Enter Player Names';
+    player1InputGroup.style.display = 'flex';
+    player2InputGroup.style.display = 'flex';
+    player1Label.textContent = 'Player 1:';
+    player1Input.placeholder = 'Player 1';
+  } else {
+    // AI modes (future implementation)
+    nameSetupTitle.textContent = 'Enter Your Name';
+    player1InputGroup.style.display = 'flex';
+    player2InputGroup.style.display = 'none';
+    player1Label.textContent = 'Your Name:';
+    player1Input.placeholder = 'Player';
+  }
+  
+  player1Input.focus();
+}
+
+/**
+ * Starts the game with configured names and mode
+ */
+function startGame() {
+  const player1Input = document.getElementById('player1-name');
+  const player2Input = document.getElementById('player2-name');
+  
+  if (gameMode === '2p') {
+    player1Name = player1Input.value.trim() || 'Player 1';
+    player2Name = player2Input.value.trim() || 'Player 2';
+  } else {
+    player1Name = player1Input.value.trim() || 'Player';
+    player2Name = 'AI';
+  }
+  
+  turnIndicator.textContent = `${player1Name}'s Turn`;
+  
+  nameSetup.classList.add('hidden');
   gameUI.classList.remove('hidden');
   updateUI();
 }
 
-// --- Event Listeners ---
-document.getElementById('mode-2p').onclick = () => startGame('2p');
-document.getElementById('reset-btn').onclick = resetGame;
+/**
+ * Returns to main menu and resets game state
+ */
+function backToMenu() {
+  menu.classList.remove('hidden');
+  nameSetup.classList.add('hidden');
+  gameUI.classList.add('hidden');
+  resetGame();
+}
 
+// ========================================
+// EVENT LISTENERS AND INITIALIZATION
+// ========================================
+
+// Game mode selection
+document.getElementById('mode-2p').onclick = () => selectGameMode('2p');
+
+// Name setup navigation
+document.getElementById('start-game-btn').onclick = startGame;
+document.getElementById('back-to-menu-btn').onclick = () => {
+  nameSetup.classList.add('hidden');
+  menu.classList.remove('hidden');
+};
+
+// Game controls
+document.getElementById('reset-btn').onclick = resetGame;
+document.getElementById('menu-btn').onclick = backToMenu;
+
+// Keyboard navigation for name inputs
+document.getElementById('player1-name').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    if (gameMode === '2p') {
+      document.getElementById('player2-name').focus();
+    } else {
+      startGame();
+    }
+  }
+});
+
+document.getElementById('player2-name').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    startGame();
+  }
+});
+
+// Hand click listeners
 hands.forEach(hand => hand.addEventListener('click', handleHandClick));
 
-// --- Enhanced UI Update for Clap Button ---
-updateUI = (function (origUpdateUI) {
+// ========================================
+// CLAP/SPLIT FUNCTIONALITY
+// ========================================
+
+/**
+ * Enhanced UI update that includes clap button logic
+ * Shows clap button when player has exactly one active hand with >1 fingers
+ */
+updateUI = (function (originalUpdateUI) {
   return function () {
     const clapBtn = document.getElementById('clap-btn');
-    // If game is over, always hide clap button
-    const gameOver = (state.player1.left === 0 && state.player1.right === 0) || (state.player2.left === 0 && state.player2.right === 0);
+    const gameOver = (state.player1.left === 0 && state.player1.right === 0) || 
+                     (state.player2.left === 0 && state.player2.right === 0);
+    
     if (!gameUI.classList.contains('hidden')) {
-      origUpdateUI();
+      originalUpdateUI();
+      
       if (gameOver) {
         if (clapBtn) clapBtn.classList.add('hidden');
       } else {
-        // Clap button logic
+        // Show clap button if player has exactly one hand alive with >1 fingers
         const player = state[currentPlayer];
-        const handsActive = [player.left > 0, player.right > 0];
-        const handVal = player.left > 0 ? player.left : player.right;
-        if ((handsActive[0] ^ handsActive[1]) && handVal > 1) {
+        const leftAlive = player.left > 0;
+        const rightAlive = player.right > 0;
+        const onlyOneHandAlive = leftAlive !== rightAlive; // XOR - exactly one is true
+        const activeHandValue = leftAlive ? player.left : player.right;
+        
+        if (onlyOneHandAlive && activeHandValue > 1) {
           clapBtn.classList.remove('hidden');
         } else {
           clapBtn.classList.add('hidden');
         }
       }
     } else {
-      // Hide hands when menu is shown
+      // Hide UI elements when in menu
       hands.forEach(hand => {
         hand.querySelector('.count').textContent = state[hand.dataset.player][hand.dataset.hand];
         hand.disabled = true;
@@ -235,9 +386,7 @@ updateUI = (function (origUpdateUI) {
   };
 })(updateUI);
 
-updateUI();
-
-// --- Clap Button Modal Logic ---
+// Clap modal elements
 const clapBtn = document.getElementById('clap-btn');
 const clapModal = document.getElementById('clap-modal');
 const clapHandValSpan = document.getElementById('clap-hand-val');
@@ -247,39 +396,94 @@ const clapError = document.getElementById('clap-error');
 const clapConfirm = document.getElementById('clap-confirm');
 const clapCancel = document.getElementById('clap-cancel');
 
+/**
+ * Makes an input field accept only numeric values
+ * @param {HTMLInputElement} input - Input element to restrict
+ */
+function makeNumericOnly(input) {
+  // Remove non-numeric characters on input
+  input.addEventListener('input', function() {
+    this.value = this.value.replace(/[^0-9]/g, '');
+  });
+  
+  // Prevent non-numeric key presses
+  input.addEventListener('keydown', function(e) {
+    const allowedKeys = [8, 9, 27, 13, 46]; // Backspace, Tab, Escape, Enter, Delete
+    const ctrlKeys = [65, 67, 86, 88]; // Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+    
+    // Allow navigation and control keys
+    if (allowedKeys.includes(e.keyCode) || 
+        (ctrlKeys.includes(e.keyCode) && e.ctrlKey)) {
+      return;
+    }
+    
+    // Allow numeric keys (0-9) from both keyboard and numpad
+    const isNumericKey = (e.keyCode >= 48 && e.keyCode <= 57) || 
+                         (e.keyCode >= 96 && e.keyCode <= 105);
+    
+    if (!isNumericKey || e.shiftKey) {
+      e.preventDefault();
+    }
+  });
+}
+
+// Apply numeric-only behavior to clap inputs
+makeNumericOnly(clapLeftInput);
+makeNumericOnly(clapRightInput);
+
+/**
+ * Opens the clap modal for splitting fingers between hands
+ */
 clapBtn.onclick = function () {
   const player = state[currentPlayer];
-  let handName = player.left > 0 ? 'left' : 'right';
-  let handVal = player[handName];
+  const handName = player.left > 0 ? 'left' : 'right';
+  const handVal = player[handName];
+  
   clapHandValSpan.textContent = handVal;
   clapLeftInput.value = '';
   clapRightInput.value = '';
   clapLeftInput.max = handVal - 1;
   clapRightInput.max = handVal - 1;
   clapError.textContent = '';
+  
   clapModal.classList.add('active');
   clapModal.classList.remove('hidden');
   clapLeftInput.focus();
 };
 
+/**
+ * Confirms the clap/split action with validation
+ */
 clapConfirm.onclick = function () {
   const player = state[currentPlayer];
-  let handVal = player.left > 0 ? player.left : player.right;
-  let left = parseInt(clapLeftInput.value);
-  let right = parseInt(clapRightInput.value);
+  const handVal = player.left > 0 ? player.left : player.right;
+  const left = parseInt(clapLeftInput.value);
+  const right = parseInt(clapRightInput.value);
+  
+  // Validate split values
   if (isNaN(left) || isNaN(right) || left < 1 || right < 1 || left + right !== handVal) {
     clapError.textContent = `Invalid split. Must add up to ${handVal} and be at least 1 each.`;
     return;
   }
+  
+  // Apply the split
   player.left = left;
   player.right = right;
+  
+  // Close modal and continue game
   clapModal.classList.remove('active');
   clapModal.classList.add('hidden');
   switchTurn();
   updateUI();
 };
 
+/**
+ * Cancels the clap action and closes modal
+ */
 clapCancel.onclick = function () {
   clapModal.classList.remove('active');
   clapModal.classList.add('hidden');
 };
+
+// Initialize the game
+updateUI();

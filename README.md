@@ -6,11 +6,10 @@ A simple 2-player version of the classic hand game "Chopsticks", built with HTML
 
 Currently the game features only barebone game logic — it requires two players locally (no networking or AI).
 
-### To Do:
+### To Do
 
 - Improve visual polish and animations
 - Add a simple AI
-- Add reset and undo buttons
 
 Each player starts with one finger on each hand. On your turn, you choose one of your hands to tap an opponent's hand. The tapped hand's finger count increases by the attacker's count. If a hand reaches 5, it "dies" (becomes unusable).
 
@@ -38,7 +37,7 @@ The first player to cause both of the opponent's hands to reach 0 wins!
 
 ## 🌐 Play Online
 
-You can try out the game live via GitHub Pages [here](https://yujiho1910.github.io/chopsticks/)
+You can try out the game live via GitHub Pages: [Play Chopsticks](https://yujiho1910.github.io/chopsticks/)
 
 ## 📁 File Structure
 
