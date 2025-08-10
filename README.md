@@ -1,81 +1,79 @@
 # chopsticks
 
-A simple 2-player version of the classic hand game "Chopsticks", built with HTML, CSS, and JavaScript. This game was developed as a **passion project** to grow my skills in game logic, interactive UI design, and frontend development.
+A polished browser version of the classic hand game "Chopsticks", built with HTML, CSS, and JavaScript. It features a pure game engine, a small AI module, and an accessible UI.
 
-## 🎯 Objective
+## 🎯 What’s inside
 
-Currently the game features only barebone game logic — it requires two players locally (no networking or AI).
+- Two-player local mode
+- Optional AI opponent (Random, Greedy)
+- Split/Clap mechanic via modal with validation
+- Recent moves with timestamps + full history modal
+- Accessible UI (ARIA labels, keyboard-friendly)
 
-### To Do
+## 🧩 How to run
 
-- Improve visual polish and animations
-- Add a simple AI
+- Dev server (with sourcemaps)
 
-Each player starts with one finger on each hand. On your turn, you choose one of your hands to tap an opponent's hand. The tapped hand's finger count increases by the attacker's count. If a hand reaches 5, it "dies" (becomes unusable).
+```pwsh
+npm run dev
+```
 
-The first player to cause both of the opponent's hands to reach 0 wins!
+- Production build
 
-## 🧩 Features
+```pwsh
+npm run build
+```
 
-- Turn-based game logic
-- Interactive button UI with cartoon-style visuals
-- Win condition handling
-- Responsive design for desktop and mobile
+- Tests
 
-## 🚀 How to Play
+```pwsh
+npm test
+```
 
-1. Click one of your hands to select it
-2. Click an opponent’s hand to attack it
-3. Hands that reach 5 are disabled
-4. Game ends when one player has both hands at 0
+Open `public/index.html` (served by the dev command). The bundle is output to `public/dist/app.bundle.js`.
 
-## 💡 Tech Stack
+## � How to play
 
-- **HTML** for structure
-- **CSS** (custom + Google Fonts) for playground-style visuals
-- **Vanilla JavaScript** for game mechanics
+1. Select a game mode (2P or AI) and enter names
+2. Click one of your hands to select it
+3. Click opponent’s hand to attack, or your other hand to self-attack
+4. If exactly one of your hands is alive with >1, use Clap to split fingers
+5. Hands reaching 5 wrap to 0; eliminate both opponent hands to win
 
-## 🌐 Play Online
+## 🧠 Tech
 
-You can try out the game live via GitHub Pages: [Play Chopsticks](https://yujiho1910.github.io/chopsticks/)
+- Engine: pure functions (`src/engine/game.js`)
+- AI: strategies (`src/ai/ai.js`)
+- UI: DOM wiring (`src/ui/script.js`)
+- Build: esbuild, Tests: Vitest
 
-## 📁 File Structure
+## 📁 Structure
 
 ```text
-|   .gitignore
-|   app.entry.js
-|   index.html
-|   LICENSE
-|   package-lock.json
 |   package.json
 |   README.md
-|   style.css
 |   TECHNICAL.md
 +---docs
 |       flow-diagram.md
++---public
+|       index.html
+|       style.css
+|       dist/
 +---src
 |   +---ai
 |   |       ai.js
-|   |
 |   +---engine
 |   |       game.js
-|   |
 |   \---ui
 |           script.js
 +---tests
+|   ai.test.js
 |   chopsticks.test.js
+|   engine.test.js
 ```
-
-## 🛠 Future Ideas
-
-- Add a reset button
-- Add split mechanic
-- Add AI opponent logic
-- Add hand animations or sounds
 
 ## 🙌 Author
 
-**Yuji Ho** — built as a fun and educational project to explore game creation, interactive design, and browser-based deployment.
+**Yuji Ho Jing Rui** — built as a fun and educational project to explore game creation, interactive design, and browser-based deployment.
 
----
 Thanks for playing! 🍃

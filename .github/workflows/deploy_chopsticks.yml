@@ -2,7 +2,7 @@ name: Deploy chopsticks to GH Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 permissions:
   contents: read
@@ -14,24 +14,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - run: npm ci
+      - run: npm run lint --if-present
+      - run: npm test
   build:
+    needs: quality
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
       - run: npm ci
       - run: npm run build
       # Stage static site files for Pages
       - name: Prepare site artifact
         run: |
           mkdir -p site
-          cp index.html site/index.html
-          cp style.css site/style.css
-          cp -r dist site/dist
+          cp public/index.html site/index.html
+          cp public/style.css site/style.css
+          cp -r public/dist site/dist
           # Optional SPA fallback:
           cp site/index.html site/404.html
       - uses: actions/upload-pages-artifact@v3

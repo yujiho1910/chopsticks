@@ -25,11 +25,11 @@ This document describes the architecture, modules, and extension points of the C
 
 - Optionally calls into AI strategies if an AI mode is enabled.
 
-- app.entry.js
+- src/main.js
 
-- Bundler entry. Ensures engine, AI, and UI are loaded in order.
+- Bundler entry. Imports engine, AI, and UI in order so the UI initializes after dependencies.
 
-- dist/app.bundle.js
+- public/dist/app.bundle.js
 
 - Bundled/minified script for the browser (no raw sources exposed in production).
 
@@ -200,7 +200,7 @@ A -- no --> R
 
 - npm run dev:watch # watch rebuilds
 
-- npm run build # minified bundle to dist/app.bundle.js
+- npm run build # minified bundle to public/dist/app.bundle.js
 
 ## Testing
 
@@ -212,4 +212,4 @@ A -- no --> R
 
 - The browser build exposes Game and AI on window for convenience.
 
-- For production, serve index.html with dist/app.bundle.js to avoid exposing raw sources.
+- For production, serve public/index.html with public/dist/app.bundle.js to avoid exposing raw sources.

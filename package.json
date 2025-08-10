@@ -2,13 +2,22 @@
   "name": "chopsticks",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "esbuild app.entry.js --bundle --outfile=dist/app.bundle.js --servedir=. --sourcemap",
-    "dev:watch": "esbuild app.entry.js --bundle --outfile=dist/app.bundle.js --sourcemap --watch=forever",
-    "build": "esbuild app.entry.js --bundle --minify --outfile=dist/app.bundle.js",
-    "test": "node tests/chopsticks.test.js"
+  "dev": "esbuild src/main.js --bundle --outfile=public/dist/app.bundle.js --servedir=public --sourcemap",
+  "dev:watch": "esbuild src/main.js --bundle --outfile=public/dist/app.bundle.js --sourcemap --watch=forever",
+  "build": "esbuild src/main.js --bundle --minify --outfile=public/dist/app.bundle.js",
+    "test": "vitest run --config vitest.config.mjs",
+  "test:watch": "vitest --config vitest.config.mjs",
+  "lint": "eslint src tests --ext .js",
+  "format": "prettier --write .",
+  "check": "npm run build && npm run test"
   },
   "devDependencies": {
-  "esbuild": "0.25.8"
+    "esbuild": "0.25.8",
+  "vitest": "^3.2.4",
+  "eslint": "^9.11.1",
+  "eslint-config-prettier": "^9.1.0",
+  "prettier": "^3.3.3"
   }
 }
