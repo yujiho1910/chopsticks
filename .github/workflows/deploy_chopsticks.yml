@@ -18,17 +18,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
       - run: npm run build
-      # Optional SPA fallback:
-      - run: cp dist/index.html dist/404.html
+      # Stage static site files for Pages
+      - name: Prepare site artifact
+        run: |
+          mkdir -p site
+          cp index.html site/index.html
+          cp style.css site/style.css
+          cp -r dist site/dist
+          # Optional SPA fallback:
+          cp site/index.html site/404.html
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: site
   deploy:
     needs: build
     runs-on: ubuntu-latest
