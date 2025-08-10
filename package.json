@@ -1,0 +1,14 @@
+{
+  "name": "chopsticks",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "esbuild app.entry.js --bundle --outfile=dist/app.bundle.js --servedir=. --sourcemap",
+    "dev:watch": "esbuild app.entry.js --bundle --outfile=dist/app.bundle.js --sourcemap --watch=forever",
+    "build": "esbuild app.entry.js --bundle --minify --outfile=dist/app.bundle.js",
+    "test": "node tests/chopsticks.test.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.23.0"
+  }
+}

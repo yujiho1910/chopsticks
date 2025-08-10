@@ -42,12 +42,28 @@ You can try out the game live via GitHub Pages: [Play Chopsticks](https://yujiho
 ## 📁 File Structure
 
 ```text
-├── index.html        # UI layout
-├── style.css         # Cartoon-style visuals
-├── script.js         # Game logic
-├── tests/            # Folder for logic/unit tests
-│   └── chopstick.test.js       # Basic test cases for game state
-└── README.md         # Project info
+|   .gitignore
+|   app.entry.js
+|   index.html
+|   LICENSE
+|   package-lock.json
+|   package.json
+|   README.md
+|   style.css
+|   TECHNICAL.md
++---docs
+|       flow-diagram.md
++---src
+|   +---ai
+|   |       ai.js
+|   |
+|   +---engine
+|   |       game.js
+|   |
+|   \---ui
+|           script.js
++---tests
+|   chopsticks.test.js
 ```
 
 ## 🛠 Future Ideas
