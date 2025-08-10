@@ -320,6 +320,26 @@ h1 {
 	color: #219150;
 }
 
+/* ===============================
+	 AI opponent theming (Player 2 hands become red)
+	 Applied when body has .ai-opponent class
+   =============================== */
+.ai-opponent #player2-board .hand {
+	border-color: #d32f2f;
+	background-color: #fdecea; /* light red */
+}
+.ai-opponent #player2-board .hand:hover:not(:disabled) {
+	background-color: #f8d7da;
+}
+.ai-opponent #player2-board .hand.selected {
+	background-color: #f6c5c7;
+	box-shadow: 0 0 10px rgba(211, 47, 47, 0.4);
+	border-color: #e57373;
+}
+.ai-opponent #player2-board .count {
+	color: #d32f2f;
+}
+
 /* ========================================
 	 MENU & NAVIGATION BUTTONS
 	 ======================================== */

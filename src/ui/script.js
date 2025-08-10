@@ -61,13 +61,20 @@ function resetGame() {
 /** Sync hand buttons' counts and states with the current engine state */
 function updateHandUI() {
   if (!hands || hands.length === 0) return;
+  const isAIMode = gameMode && gameMode !== "2p";
+  const aiTurn = isAIMode && engineState.current === "player2";
   hands.forEach((hand) => {
     const player = hand.dataset.player;
     const handName = hand.dataset.hand;
     const count = engineState.hands[player][handName];
     hand.querySelector(".count").textContent = count;
-    hand.disabled =
-      count === 0 || (player !== engineState.current && !selectedHand);
+    if (aiTurn) {
+      // While AI is thinking/acting, disable all inputs
+      hand.disabled = true;
+    } else {
+      hand.disabled =
+        count === 0 || (player !== engineState.current && !selectedHand);
+    }
     hand.classList.remove("selected");
   });
   if (selectedButton) selectedButton.classList.add("selected");
@@ -117,6 +124,9 @@ function switchTurn() {
 
 /** Main click handler for hand buttons; routes to attack/self-attack flows */
 function handleHandClick(e) {
+  // Block interactions entirely during AI's turn
+  if (gameMode && gameMode !== "2p" && engineState.current === "player2")
+    return;
   const hand = e.currentTarget;
   const player = hand.dataset.player;
   const handName = hand.dataset.hand;
@@ -202,6 +212,11 @@ function selectGameMode(mode) {
   aiAgent = null;
   recentMoves = [];
   fullHistory = [];
+  // Toggle AI theming on player 2 when AI modes are active
+  if (typeof document !== "undefined" && document.body) {
+    if (mode === "2p") document.body.classList.remove("ai-opponent");
+    else document.body.classList.add("ai-opponent");
+  }
   if (mode === "ai-random") aiAgent = AI && AI.randomMove;
   if (mode === "ai-greedy") aiAgent = AI && AI.greedyMove;
   if (mode === "ai-minimax") aiAgent = AI && AI.minimaxMove;
@@ -267,6 +282,8 @@ function backToMenu() {
   if (menu) menu.classList.remove("hidden");
   if (nameSetup) nameSetup.classList.add("hidden");
   if (gameUI) gameUI.classList.add("hidden");
+  if (typeof document !== "undefined" && document.body)
+    document.body.classList.remove("ai-opponent");
   resetGame();
 }
 
@@ -321,8 +338,11 @@ function initializeGame() {
       if (e.key === "Enter") startGame();
     });
 
+  // Use onclick consistently to avoid duplicate listeners across resets
   if (hands && hands.length > 0)
-    hands.forEach((hand) => hand.addEventListener("click", handleHandClick));
+    hands.forEach((hand) => {
+      hand.onclick = handleHandClick;
+    });
 
   // Wire full history modal
   const viewHistoryBtn = document.getElementById("view-history-btn");
